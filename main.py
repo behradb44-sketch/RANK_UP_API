@@ -1856,26 +1856,26 @@ async def broadcast_startup():
 # NEON CORE CLIENT
 # ============================================================
 
-NEON_HTML = r"""
-<!DOCTYPE html>
+NEON_HTML = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>NEON CORE</title>
+<!-- RANK UP ONLINE ORIGINAL NEON CORE V1 -->
 
 <style>
 *{
     box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
 html,body{
-    margin:0;
     width:100%;
     height:100%;
     overflow:hidden;
-    background:#030711;
-    color:#eaf4ff;
+    background:#03050b;
     font-family:Arial,Helvetica,sans-serif;
 }
 
@@ -1885,374 +1885,462 @@ body{
     justify-content:center;
 }
 
-#app{
-    width:100%;
-    height:100%;
-    position:relative;
-}
-
 canvas{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    background:#030711;
+    display:block;
+    background:
+        radial-gradient(circle at center,#07101d 0%,#03050b 70%);
+    cursor:crosshair;
 }
 
-#menu{
-    position:absolute;
-    inset:0;
+#ui{
+    position:fixed;
+    top:18px;
+    left:18px;
+    right:18px;
     display:flex;
-    align-items:center;
-    justify-content:center;
-    background:
-        radial-gradient(
-            circle at center,
-            #101d38 0%,
-            #030711 65%
-        );
+    justify-content:space-between;
+    pointer-events:none;
+    color:white;
     z-index:10;
 }
 
 .panel{
-    width:min(470px,92vw);
-    padding:32px;
-    border:1px solid #23456d;
-    border-radius:22px;
-    background:rgba(5,12,27,.94);
+    background:rgba(3,7,18,.78);
+    border:1px solid rgba(0,220,255,.35);
     box-shadow:
-        0 0 50px rgba(0,140,255,.15);
-    text-align:center;
-}
-
-.logo{
-    font-size:42px;
-    font-weight:900;
-    letter-spacing:5px;
-    margin-bottom:5px;
-}
-
-.logo span{
-    color:#25a7ff;
-}
-
-.subtitle{
-    color:#8ba5c4;
-    margin-bottom:28px;
-}
-
-button,input{
-    width:100%;
-    height:50px;
-    border-radius:12px;
-    border:1px solid #315477;
-    font-size:16px;
-}
-
-button{
-    cursor:pointer;
-    background:#0e7cff;
-    color:white;
-    font-weight:bold;
-    margin-top:10px;
-}
-
-button:hover{
-    background:#2690ff;
-}
-
-button.secondary{
-    background:#0b1426;
-}
-
-input{
-    background:#071020;
-    color:white;
-    padding:0 15px;
-    outline:none;
-    text-transform:uppercase;
-    text-align:center;
-    letter-spacing:4px;
-}
-
-#roomCode{
-    font-size:24px;
-    margin:12px 0;
-}
-
-#status{
-    min-height:24px;
-    color:#8fb4d9;
-    margin-top:15px;
-}
-
-#hud{
-    display:none;
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    z-index:5;
-}
-
-.topbar{
-    position:absolute;
-    top:15px;
-    left:15px;
-    right:15px;
-    display:flex;
-    justify-content:space-between;
-    gap:12px;
-}
-
-.card{
-    background:rgba(3,9,20,.82);
-    border:1px solid #1e4268;
-    border-radius:14px;
-    padding:10px 14px;
+        0 0 20px rgba(0,180,255,.12),
+        inset 0 0 20px rgba(0,180,255,.04);
     backdrop-filter:blur(8px);
+    border-radius:12px;
+    padding:10px 14px;
 }
 
-.playerStats{
-    min-width:230px;
+.stat{
+    min-width:190px;
+}
+
+.label{
+    font-size:11px;
+    color:#79cfff;
+    letter-spacing:2px;
+}
+
+.value{
+    font-size:20px;
+    font-weight:bold;
+    margin-top:3px;
 }
 
 .bar{
+    width:190px;
     height:8px;
-    background:#172437;
+    background:#111827;
     border-radius:10px;
+    margin-top:7px;
     overflow:hidden;
-    margin-top:5px;
 }
 
-.hp{
+.bar > div{
     height:100%;
-    background:#21d98a;
+    width:100%;
+    transition:width .15s;
 }
 
-.xp{
-    height:100%;
-    background:#2a9cff;
+#hpBar{
+    background:linear-gradient(90deg,#ff164f,#ff5d77);
+    box-shadow:0 0 12px #ff164f;
+}
+
+#xpBar{
+    background:linear-gradient(90deg,#00d9ff,#9c5cff);
+    box-shadow:0 0 12px #00d9ff;
 }
 
 #centerMessage{
-    position:absolute;
-    top:45%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    font-size:54px;
-    font-weight:900;
-    letter-spacing:6px;
-    text-shadow:0 0 25px #1598ff;
-    text-align:center;
-}
-
-#help{
-    position:absolute;
-    bottom:14px;
-    left:50%;
-    transform:translateX(-50%);
-    color:#7890ab;
-    font-size:13px;
-    text-align:center;
-}
-
-#upgrade{
-    display:none;
-    position:absolute;
+    position:fixed;
     inset:0;
+    display:flex;
     align-items:center;
     justify-content:center;
-    background:rgba(0,0,0,.65);
-    pointer-events:auto;
+    pointer-events:none;
     z-index:20;
 }
 
-.upgradePanel{
-    width:min(650px,92vw);
-    background:#07101f;
-    border:1px solid #23639b;
-    border-radius:20px;
-    padding:25px;
+.overlay{
+    width:min(700px,90vw);
+    text-align:center;
+    padding:40px;
+    background:rgba(2,5,13,.92);
+    border:1px solid rgba(0,220,255,.45);
+    box-shadow:
+        0 0 70px rgba(0,180,255,.16),
+        inset 0 0 50px rgba(0,180,255,.04);
+    border-radius:22px;
+    pointer-events:auto;
+}
+
+.overlay h1{
+    font-size:clamp(42px,8vw,90px);
+    color:#fff;
+    letter-spacing:8px;
+    text-shadow:
+        0 0 10px #00d9ff,
+        0 0 30px #00d9ff;
+}
+
+.overlay h2{
+    color:#00d9ff;
+    margin:10px 0 20px;
+    letter-spacing:3px;
+}
+
+.overlay p{
+    color:#b8c9d9;
+    line-height:1.8;
+}
+
+button{
+    margin-top:25px;
+    border:none;
+    padding:14px 30px;
+    border-radius:10px;
+    color:white;
+    background:linear-gradient(90deg,#0077ff,#a000ff);
+    font-weight:bold;
+    font-size:16px;
+    cursor:pointer;
+    box-shadow:0 0 25px rgba(80,0,255,.35);
+    transition:.2s;
+}
+
+button:hover{
+    transform:translateY(-2px) scale(1.03);
+    box-shadow:0 0 35px rgba(0,200,255,.5);
+}
+
+.hidden{
+    display:none !important;
+}
+
+#upgradeScreen{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.65);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:30;
+}
+
+.upgradeBox{
+    width:min(850px,92vw);
     text-align:center;
 }
 
-.upgradePanel h2{
-    margin-top:0;
+.upgradeBox h2{
+    color:white;
+    font-size:35px;
+    margin-bottom:25px;
+    text-shadow:0 0 20px #00d9ff;
 }
 
-.options{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:12px;
-}
-
-.option{
-    min-height:150px;
-    background:#0a172b;
-    border:1px solid #254a70;
-    border-radius:15px;
-    padding:15px;
-    cursor:pointer;
-}
-
-.option:hover{
-    border-color:#2199ff;
-    transform:translateY(-2px);
-}
-
-.option h3{
-    color:#39aaff;
-}
-
-#result{
-    display:none;
-    position:absolute;
-    inset:0;
-    z-index:30;
-    align-items:center;
+.cards{
+    display:flex;
+    gap:18px;
     justify-content:center;
-    background:rgba(1,5,12,.9);
 }
 
-.resultTitle{
-    font-size:65px;
-    font-weight:900;
-    letter-spacing:5px;
+.card{
+    flex:1;
+    min-height:180px;
+    padding:25px 18px;
+    background:rgba(6,12,28,.96);
+    border:1px solid #17314b;
+    border-radius:16px;
+    color:white;
+    cursor:pointer;
+    transition:.2s;
 }
 
-.resultScore{
-    font-size:28px;
-    margin:15px 0;
+.card:hover{
+    transform:translateY(-8px);
+    border-color:#00d9ff;
+    box-shadow:0 0 35px rgba(0,217,255,.25);
 }
 
-@media(max-width:650px){
-    .options{
-        grid-template-columns:1fr;
+.card .icon{
+    font-size:42px;
+    margin-bottom:12px;
+}
+
+.card h3{
+    color:#00d9ff;
+    margin-bottom:10px;
+}
+
+.card p{
+    color:#aebccc;
+    font-size:14px;
+    line-height:1.5;
+}
+
+#toast{
+    position:fixed;
+    left:50%;
+    bottom:30px;
+    transform:translateX(-50%);
+    padding:10px 20px;
+    color:white;
+    background:rgba(5,10,20,.9);
+    border:1px solid rgba(0,217,255,.4);
+    border-radius:10px;
+    opacity:0;
+    transition:.3s;
+    z-index:50;
+}
+
+#controls{
+    position:fixed;
+    bottom:18px;
+    left:18px;
+    color:#64788d;
+    font-size:12px;
+    pointer-events:none;
+}
+
+@media(max-width:700px){
+    .cards{
+        flex-direction:column;
     }
 
-    .resultTitle{
-        font-size:42px;
+    .card{
+        min-height:130px;
+    }
+
+    #controls{
+        display:none;
+    }
+
+    .stat{
+        min-width:140px;
+    }
+
+    .bar{
+        width:140px;
     }
 }
+
+#onlineRoomControls{
+    opacity:.98;
+}
+
+#onlineRoomControls button:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+    transform:none;
+}
+
+#onlineConnection.error{
+    color:#ff6685;
+}
+
+#roomCodeDisplay strong{
+    color:#00d9ff;
+}
+
+#remotePlayerLabel{
+    position:fixed;
+    left:0;
+    top:0;
+    z-index:12;
+    pointer-events:none;
+    color:#ff7cf3;
+    font-size:11px;
+    font-weight:bold;
+    letter-spacing:1px;
+    text-shadow:0 0 10px rgba(255,80,235,.8);
+}
+
 </style>
 </head>
 
 <body>
 
-<div id="app">
-
 <canvas id="game"></canvas>
 
-<div id="menu">
+<div id="ui">
 
-    <div class="panel">
+    <div class="panel stat">
+        <div class="label">CORE INTEGRITY</div>
 
-        <div class="logo">
-            NEON <span>CORE</span>
+        <div class="value">
+            <span id="hpText">100</span> / 100
         </div>
 
-        <div class="subtitle">
-            RANK UP • TWO PLAYER CO-OP
+        <div class="bar">
+            <div id="hpBar"></div>
         </div>
 
-        <button id="createBtn">
-            CREATE ROOM
-        </button>
-
-        <div style="margin:18px 0;color:#526b87;">
-            OR
+        <div class="label" style="margin-top:9px;">
+            ENERGY XP
         </div>
 
-        <input
-            id="roomInput"
-            maxlength="6"
-            placeholder="ROOM CODE"
-        >
-
-        <button
-            id="joinBtn"
-            class="secondary"
-        >
-            JOIN ROOM
-        </button>
-
-        <div id="status">
-            Connecting to RANK UP...
+        <div class="bar">
+            <div id="xpBar"></div>
         </div>
+    </div>
+
+    <div class="panel" style="text-align:right;">
+
+        <div class="label">WAVE</div>
+        <div class="value" id="waveText">1</div>
+
+        <div class="label" style="margin-top:7px;">
+            SCORE
+        </div>
+
+        <div class="value" id="scoreText">0</div>
+
+        <div class="label" style="margin-top:7px;">
+            BEST
+        </div>
+
+        <div class="value" id="bestText">0</div>
 
     </div>
 
 </div>
 
-<div id="hud">
-
-    <div class="topbar">
-
-        <div
-            class="card playerStats"
-            id="p1"
-        ></div>
-
-        <div
-            class="card"
-            id="waveInfo"
-        >
-            WAVE 0
-        </div>
-
-        <div
-            class="card playerStats"
-            id="p2"
-        ></div>
-
-    </div>
-
-    <div id="centerMessage"></div>
-
-    <div id="help">
-        WASD / ARROWS = MOVE • MOUSE = AIM • LEFT CLICK = SHOOT • E = REVIVE
-    </div>
-
+<div id="controls">
+    WASD / ARROWS = MOVE &nbsp;&nbsp; • &nbsp;&nbsp;
+    MOUSE = AIM &nbsp;&nbsp; • &nbsp;&nbsp;
+    LEFT CLICK = FIRE &nbsp;&nbsp; • &nbsp;&nbsp; E = REVIVE
 </div>
 
-<div id="upgrade">
+<div id="centerMessage">
 
-    <div class="upgradePanel">
+    <div class="overlay" id="startScreen">
 
-        <h2>LEVEL UP</h2>
+        <h1>NEON</h1>
+        <h2>CORE</h2>
 
         <p>
-            Choose an upgrade
+            SURVIVE THE ARENA.<br>
+            DESTROY THE HOSTILES.<br>
+            REACH WAVE 20.<br>
+            BECOME THE CORE.
         </p>
 
-        <div
-            class="options"
-            id="options"
-        ></div>
+        <button id="startButton">
+            START MISSION
+        </button>
+
+        <div id="onlineRoomControls" style="margin-top:22px;">
+            <div id="onlineConnection" style="
+                color:#79cfff;
+                font-size:12px;
+                letter-spacing:1px;
+                margin-bottom:12px;
+            ">CONNECTING TO RANK UP...</div>
+
+            <div style="
+                display:flex;
+                gap:10px;
+                flex-wrap:wrap;
+                justify-content:center;
+            ">
+                <button id="createRoomButton" style="margin-top:0;">
+                    CREATE ROOM
+                </button>
+                <button id="startButtonOnline" style="margin-top:0;display:none;">
+                    ENTER ARENA
+                </button>
+            </div>
+
+            <div style="
+                display:flex;
+                gap:10px;
+                margin-top:10px;
+                justify-content:center;
+                flex-wrap:wrap;
+            ">
+                <input
+                    id="roomCodeInput"
+                    maxlength="6"
+                    placeholder="ROOM CODE"
+                    autocomplete="off"
+                    style="
+                        width:210px;
+                        text-align:center;
+                        text-transform:uppercase;
+                        letter-spacing:4px;
+                        background:#071020;
+                        color:white;
+                        border:1px solid #315477;
+                        border-radius:10px;
+                        padding:12px;
+                        outline:none;
+                    "
+                >
+                <button id="joinRoomButton" style="margin-top:0;">
+                    JOIN ROOM
+                </button>
+            </div>
+
+            <div id="roomCodeDisplay" style="
+                min-height:26px;
+                margin-top:12px;
+                color:#ffffff;
+                font-weight:bold;
+                letter-spacing:3px;
+            "></div>
+        </div>
 
     </div>
 
-</div>
+    <div class="overlay hidden" id="gameOverScreen">
 
-<div id="result">
+        <h1 style="font-size:50px;">
+            SYSTEM FAILURE
+        </h1>
 
-    <div class="panel">
+        <h2>CORE DESTROYED</h2>
 
-        <div
-            id="resultTitle"
-            class="resultTitle"
-        >
+        <p>
+            SCORE:
+            <strong id="finalScore">0</strong>
+            <br>
+            WAVE:
+            <strong id="finalWave">1</strong>
+            <br>
+            BEST:
+            <strong id="finalBest">0</strong>
+        </p>
+
+        <button id="restartButton">
+            PLAY AGAIN
+        </button>
+
+    </div>
+
+    <div class="overlay hidden" id="victoryScreen">
+
+        <h1 style="font-size:50px;">
             VICTORY
-        </div>
+        </h1>
 
-        <div
-            id="resultScore"
-            class="resultScore"
-        ></div>
+        <h2>CORE ASCENDED</h2>
 
-        <button
-            onclick="location.reload()"
-        >
+        <p>
+            YOU SURVIVED ALL 20 WAVES.<br>
+            FINAL SCORE:
+            <strong id="victoryScore">0</strong>
+            <br>
+            BEST:
+            <strong id="victoryBest">0</strong>
+        </p>
+
+        <button id="victoryButton">
             PLAY AGAIN
         </button>
 
@@ -2260,942 +2348,2998 @@ input{
 
 </div>
 
+<div id="upgradeScreen" class="hidden">
+
+    <div class="upgradeBox">
+
+        <h2>⚡ LEVEL UP — CHOOSE UPGRADE</h2>
+
+        <div class="cards">
+
+            <div class="card" data-upgrade="fire">
+                <div class="icon">⚡</div>
+                <h3 id="upgrade1Title">
+                    RAPID FIRE
+                </h3>
+                <p id="upgrade1Text">
+                    Increase weapon fire rate.
+                </p>
+            </div>
+
+            <div class="card" data-upgrade="power">
+                <div class="icon">💥</div>
+                <h3 id="upgrade2Title">
+                    POWER SHOT
+                </h3>
+                <p id="upgrade2Text">
+                    Increase bullet damage.
+                </p>
+            </div>
+
+            <div class="card" data-upgrade="repair">
+                <div class="icon">❤️</div>
+                <h3 id="upgrade3Title">
+                    NANO REPAIR
+                </h3>
+                <p id="upgrade3Text">
+                    Restore HP.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
 </div>
+
+<div id="toast"></div>
+<div id="remotePlayerLabel"></div>
 
 <script>
 
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const canvas =
+    document.getElementById("game");
 
-let ws = null;
-let state = null;
+const ctx =
+    canvas.getContext("2d");
 
-let mySlot = null;
-let ticket = null;
+let W = innerWidth;
+let H = innerHeight;
 
-let keys = {};
-let mouseX = 0;
-let mouseY = 0;
-let shooting = false;
-let reviving = false;
+canvas.width = W;
+canvas.height = H;
 
-const menu = document.getElementById("menu");
-const hud = document.getElementById("hud");
-const statusBox = document.getElementById("status");
-const upgrade = document.getElementById("upgrade");
-const optionsBox = document.getElementById("options");
-const result = document.getElementById("result");
+addEventListener("resize",()=>{
 
-ticket = new URLSearchParams(
-    location.search
-).get("ticket");
+    W = innerWidth;
+    H = innerHeight;
 
-function resize(){
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
+    canvas.width = W;
+    canvas.height = H;
+});
 
-window.addEventListener(
-    "resize",
-    resize
-);
+const keys = {};
 
-resize();
+addEventListener("keydown",e=>{
 
+    keys[e.key.toLowerCase()] = true;
 
-function setStatus(text){
-    statusBox.textContent = text;
-}
-
-
-function connect(){
-
-    if(!ticket){
-        setStatus(
-            "Missing RANK UP launch ticket."
-        );
-        return;
+    if(
+        e.key.toLowerCase()==="r" &&
+        gameOver
+    ){
+        restart();
     }
+});
 
-    const protocol =
-        location.protocol === "https:"
-        ? "wss:"
-        : "ws:";
+addEventListener("keyup",e=>{
 
-    ws = new WebSocket(
-        protocol +
-        "//" +
-        location.host +
-        "/ws/neon/" +
-        encodeURIComponent(ticket)
-    );
+    keys[e.key.toLowerCase()] = false;
+});
 
-    ws.onopen = function(){
+const mouse = {
 
-        setStatus(
-            "Connected. Create a room or join one."
-        );
-    };
-
-    ws.onmessage = function(event){
-
-        const data = JSON.parse(
-            event.data
-        );
-
-        if(data.type === "authenticated"){
-
-            setStatus(
-                "Logged in as " +
-                data.name
-            );
-
-            return;
-        }
-
-        if(data.type === "room_created"){
-
-            setStatus(
-                "ROOM CODE: " +
-                data.room_code +
-                " — waiting for Player 2..."
-            );
-
-            return;
-        }
-
-        if(data.type === "joined"){
-
-            mySlot = data.slot;
-
-            menu.style.display = "none";
-            hud.style.display = "block";
-
-            return;
-        }
-
-        if(data.type === "error"){
-
-            setStatus(
-                data.message
-            );
-
-            return;
-        }
-
-        if(data.type === "state"){
-
-            state = data;
-
-            if(
-                state.status === "playing" ||
-                state.status === "won" ||
-                state.status === "lost"
-            ){
-
-                menu.style.display = "none";
-                hud.style.display = "block";
-            }
-
-            updateUpgrade();
-
-            if(
-                state.status === "won" ||
-                state.status === "lost"
-            ){
-                showResult();
-            }
-        }
-    };
-
-    ws.onclose = function(){
-
-        if(
-            !state ||
-            (
-                state.status !== "won" &&
-                state.status !== "lost"
-            )
-        ){
-
-            setStatus(
-                "Disconnected from RANK UP."
-            );
-        }
-    };
-}
-
-
-document
-    .getElementById("createBtn")
-    .onclick = function(){
-
-        if(!ws){
-            return;
-        }
-
-        ws.send(
-            JSON.stringify({
-                type:"create_room"
-            })
-        );
-    };
-
-
-document
-    .getElementById("joinBtn")
-    .onclick = function(){
-
-        if(!ws){
-            return;
-        }
-
-        const code =
-            document
-            .getElementById("roomInput")
-            .value
-            .trim()
-            .toUpperCase();
-
-        if(code.length !== 6){
-
-            setStatus(
-                "Enter a 6 character room code."
-            );
-
-            return;
-        }
-
-        ws.send(
-            JSON.stringify({
-                type:"join_room",
-                room_code:code
-            })
-        );
-    };
-
-
-window.addEventListener(
-    "keydown",
-    function(e){
-
-        keys[e.key.toLowerCase()] = true;
-
-        if(
-            e.key.toLowerCase() === "e"
-        ){
-            reviving = true;
-        }
-    }
-);
-
-
-window.addEventListener(
-    "keyup",
-    function(e){
-
-        keys[e.key.toLowerCase()] = false;
-
-        if(
-            e.key.toLowerCase() === "e"
-        ){
-            reviving = false;
-        }
-    }
-);
-
+    x:W/2,
+    y:H/2,
+    down:false
+};
 
 canvas.addEventListener(
     "mousemove",
-    function(e){
-
-        mouseX = e.clientX;
-        mouseY = e.clientY;
+    e=>{
+        mouse.x=e.clientX;
+        mouse.y=e.clientY;
     }
 );
-
 
 canvas.addEventListener(
     "mousedown",
-    function(){
-
-        shooting = true;
+    ()=>{
+        mouse.down=true;
     }
 );
 
-
-window.addEventListener(
+addEventListener(
     "mouseup",
-    function(){
-
-        shooting = false;
+    ()=>{
+        mouse.down=false;
     }
 );
 
+const startScreen =
+    document.getElementById("startScreen");
 
-function sendInput(){
+const gameOverScreen =
+    document.getElementById("gameOverScreen");
 
-    if(!ws){
-        return;
+const victoryScreen =
+    document.getElementById("victoryScreen");
+
+const upgradeScreen =
+    document.getElementById("upgradeScreen");
+
+const startButton =
+    document.getElementById("startButton");
+
+const restartButton =
+    document.getElementById("restartButton");
+
+const victoryButton =
+    document.getElementById("victoryButton");
+
+const hpText =
+    document.getElementById("hpText");
+
+const hpBar =
+    document.getElementById("hpBar");
+
+const xpBar =
+    document.getElementById("xpBar");
+
+const scoreText =
+    document.getElementById("scoreText");
+
+const waveText =
+    document.getElementById("waveText");
+
+const bestText =
+    document.getElementById("bestText");
+
+let bestScore =
+    Number(
+        localStorage.getItem(
+            "neonCoreBest"
+        ) || 0
+    );
+
+bestText.textContent=bestScore;
+
+let running=false;
+let gameOver=false;
+let victory=false;
+let paused=false;
+
+let score=0;
+let wave=1;
+
+const FINAL_WAVE=20;
+
+let xp=0;
+let xpNeeded=100;
+
+let enemies=[];
+let bullets=[];
+let particles=[];
+let cores=[];
+
+let spawnTimer=0;
+let waveTimer=0;
+
+
+/* =========================
+   PLAYER
+========================= */
+
+const player={
+
+    x:W/2,
+    y:H/2,
+
+    radius:17,
+
+    speed:4.2,
+
+    hp:100,
+    maxHp:100,
+
+    damage:25,
+
+    fireRate:180,
+    lastShot:0,
+
+    magnetRange:90,
+
+    criticalChance:0,
+
+    shield:0,
+
+    multishot:1
+};
+
+
+function resetPlayer(){
+
+    player.x=W/2;
+    player.y=H/2;
+
+    player.hp=100;
+    player.maxHp=100;
+
+    player.speed=4.2;
+
+    player.damage=25;
+
+    player.fireRate=180;
+    player.lastShot=0;
+
+    player.magnetRange=90;
+
+    player.criticalChance=0;
+
+    player.shield=0;
+
+    player.multishot=1;
+}
+
+
+/* =========================
+   RANDOM UPGRADES
+========================= */
+
+const upgradePool=[
+
+    {
+        id:"fire",
+        icon:"⚡",
+        title:"RAPID FIRE",
+        text:"Increase weapon fire rate.",
+    },
+
+    {
+        id:"power",
+        icon:"💥",
+        title:"POWER SHOT",
+        text:"Increase bullet damage.",
+    },
+
+    {
+        id:"repair",
+        icon:"❤️",
+        title:"NANO REPAIR",
+        text:"Restore 30 HP and increase maximum health.",
+    },
+
+    {
+        id:"speed",
+        icon:"🏃",
+        title:"OVERDRIVE",
+        text:"Increase movement speed.",
+    },
+
+    {
+        id:"magnet",
+        icon:"🧲",
+        title:"CORE MAGNET",
+        text:"Collect dropped cores from farther away.",
+    },
+
+    {
+        id:"critical",
+        icon:"🎯",
+        title:"CRITICAL CORE",
+        text:"Increase chance for double damage.",
+    },
+
+    {
+        id:"shield",
+        icon:"🛡️",
+        title:"ENERGY SHIELD",
+        text:"Gain a shield that blocks enemy damage.",
+    },
+
+    {
+        id:"multi",
+        icon:"🔱",
+        title:"MULTI SHOT",
+        text:"Fire an additional projectile.",
     }
 
-    if(ws.readyState !== WebSocket.OPEN){
-        return;
-    }
+];
 
-    if(!state){
-        return;
-    }
 
-    const me =
-        state.players.find(
-            p => p.slot === mySlot
+function randomUpgrades(){
+
+    const shuffled=
+        [...upgradePool]
+        .sort(
+            ()=>Math.random()-.5
         );
 
-    if(!me){
+    return shuffled.slice(0,3);
+}
+
+
+function showRandomUpgrades(){
+
+    const choices=
+        randomUpgrades();
+
+    const cards=
+        document.querySelectorAll(
+            ".card"
+        );
+
+    cards.forEach(
+        (card,index)=>{
+
+            const upgrade=
+                choices[index];
+
+            card.dataset.upgrade=
+                upgrade.id;
+
+            card.querySelector(
+                ".icon"
+            ).textContent=
+                upgrade.icon;
+
+            card.querySelector(
+                "h3"
+            ).textContent=
+                upgrade.title;
+
+            card.querySelector(
+                "p"
+            ).textContent=
+                upgrade.text;
+        }
+    );
+
+    upgradeScreen
+        .classList
+        .remove("hidden");
+}
+
+
+/* =========================
+   START
+========================= */
+
+function startGame(){
+
+    startScreen.classList.add(
+        "hidden"
+    );
+
+    gameOverScreen.classList.add(
+        "hidden"
+    );
+
+    victoryScreen.classList.add(
+        "hidden"
+    );
+
+    score=0;
+
+    wave=1;
+
+    xp=0;
+
+    xpNeeded=100;
+
+    enemies=[];
+    bullets=[];
+    particles=[];
+    cores=[];
+
+    spawnTimer=0;
+    waveTimer=0;
+
+    resetPlayer();
+
+    gameOver=false;
+    victory=false;
+
+    running=true;
+    paused=false;
+
+    updateUI();
+}
+
+
+startButton.onclick=startGame;
+restartButton.onclick=startGame;
+victoryButton.onclick=startGame;
+
+
+/* =========================
+   ENEMIES
+========================= */
+
+function spawnEnemy(){
+
+    const side=
+        Math.floor(
+            Math.random()*4
+        );
+
+    let x,y;
+
+    if(side===0){
+
+        x=Math.random()*W;
+        y=-40;
+    }
+
+    if(side===1){
+
+        x=W+40;
+        y=Math.random()*H;
+    }
+
+    if(side===2){
+
+        x=Math.random()*W;
+        y=H+40;
+    }
+
+    if(side===3){
+
+        x=-40;
+        y=Math.random()*H;
+    }
+
+    const elite=
+        Math.random()<
+        Math.min(
+            .08+wave*.008,
+            .3
+        );
+
+    enemies.push({
+
+        x,
+        y,
+
+        radius:
+            elite
+            ?23
+            :15,
+
+        hp:
+            elite
+            ?100+wave*20
+            :40+wave*8,
+
+        maxHp:
+            elite
+            ?100+wave*20
+            :40+wave*8,
+
+        speed:
+            elite
+            ?0.7+wave*.025
+            :1.05+wave*.045,
+
+        damage:
+            elite
+            ?22
+            :10,
+
+        elite,
+
+        color:
+            elite
+            ?"#ff2d78"
+            :"#ff3b30"
+    });
+}
+
+
+/* =========================
+   SHOOT
+========================= */
+
+function shoot(){
+
+    const now=
+        performance.now();
+
+    if(
+        now-player.lastShot<
+        player.fireRate
+    ){
         return;
     }
 
-    const sx =
-        canvas.width /
-        state.arena.width;
+    player.lastShot=now;
 
-    const sy =
-        canvas.height /
-        state.arena.height;
-
-    const worldMouseX =
-        mouseX / sx;
-
-    const worldMouseY =
-        mouseY / sy;
-
-    const angle =
+    const angle=
         Math.atan2(
-            worldMouseY - me.y,
-            worldMouseX - me.x
+            mouse.y-player.y,
+            mouse.x-player.x
         );
 
-    ws.send(
-        JSON.stringify({
-            type:"input",
+    const speed=10;
 
-            data:{
-                up:
-                    keys["w"] ||
-                    keys["arrowup"] ||
-                    false,
+    const count=
+        player.multishot;
 
-                down:
-                    keys["s"] ||
-                    keys["arrowdown"] ||
-                    false,
+    const spread=.16;
 
-                left:
-                    keys["a"] ||
-                    keys["arrowleft"] ||
-                    false,
+    for(
+        let i=0;
+        i<count;
+        i++
+    ){
 
-                right:
-                    keys["d"] ||
-                    keys["arrowright"] ||
-                    false,
+        let shotAngle=angle;
 
-                shoot:shooting,
+        if(count>1){
 
-                revive:reviving,
+            shotAngle=
+                angle+
+                (
+                    i-
+                    (count-1)/2
+                )*
+                spread;
+        }
 
-                angle:angle
-            }
-        })
+        let damage=
+            player.damage;
+
+        if(
+            Math.random()<
+            player.criticalChance
+        ){
+
+            damage*=2;
+
+            createParticles(
+                player.x,
+                player.y,
+                "#fff000",
+                6,
+                2
+            );
+        }
+
+        bullets.push({
+
+            x:player.x,
+            y:player.y,
+
+            vx:
+                Math.cos(shotAngle)*
+                speed,
+
+            vy:
+                Math.sin(shotAngle)*
+                speed,
+
+            radius:5,
+
+            damage,
+
+            life:80
+        });
+    }
+
+    createParticles(
+        player.x,
+        player.y,
+        "#00eaff",
+        4,
+        2
     );
 }
 
 
-setInterval(
-    sendInput,
-    50
-);
+/* =========================
+   PLAYER UPDATE
+========================= */
 
+function updatePlayer(){
 
-function worldToScreen(x,y){
+    let dx=0;
+    let dy=0;
 
-    return {
-        x:
-            x /
-            state.arena.width *
-            canvas.width,
+    if(
+        keys["w"] ||
+        keys["arrowup"]
+    ){
+        dy--;
+    }
 
-        y:
-            y /
-            state.arena.height *
-            canvas.height
-    };
+    if(
+        keys["s"] ||
+        keys["arrowdown"]
+    ){
+        dy++;
+    }
+
+    if(
+        keys["a"] ||
+        keys["arrowleft"]
+    ){
+        dx--;
+    }
+
+    if(
+        keys["d"] ||
+        keys["arrowright"]
+    ){
+        dx++;
+    }
+
+    if(dx || dy){
+
+        const len=
+            Math.hypot(dx,dy);
+
+        dx/=len;
+        dy/=len;
+
+        player.x+=
+            dx*player.speed;
+
+        player.y+=
+            dy*player.speed;
+    }
+
+    player.x=
+        Math.max(
+            player.radius,
+            Math.min(
+                W-player.radius,
+                player.x
+            )
+        );
+
+    player.y=
+        Math.max(
+            player.radius,
+            Math.min(
+                H-player.radius,
+                player.y
+            )
+        );
+
+    if(mouse.down){
+        shoot();
+    }
 }
 
 
+/* =========================
+   BULLETS
+========================= */
+
+function updateBullets(){
+
+    for(
+        let i=bullets.length-1;
+        i>=0;
+        i--
+    ){
+
+        const b=bullets[i];
+
+        b.x+=b.vx;
+        b.y+=b.vy;
+
+        b.life--;
+
+        if(
+            b.life<=0 ||
+            b.x<-100 ||
+            b.x>W+100 ||
+            b.y<-100 ||
+            b.y>H+100
+        ){
+
+            bullets.splice(i,1);
+            continue;
+        }
+
+        for(
+            let j=enemies.length-1;
+            j>=0;
+            j--
+        ){
+
+            const e=enemies[j];
+
+            const dist=
+                Math.hypot(
+                    b.x-e.x,
+                    b.y-e.y
+                );
+
+            if(
+                dist<
+                b.radius+e.radius
+            ){
+
+                e.hp-=b.damage;
+
+                createParticles(
+                    b.x,
+                    b.y,
+                    e.color,
+                    6,
+                    2.5
+                );
+
+                bullets.splice(i,1);
+
+                if(e.hp<=0){
+
+                    score+=
+                        e.elite
+                        ?150
+                        :50;
+
+                    if(
+                        Math.random()<.65
+                    ){
+
+                        cores.push({
+
+                            x:e.x,
+                            y:e.y,
+
+                            radius:7,
+
+                            life:600
+                        });
+                    }
+
+                    createParticles(
+                        e.x,
+                        e.y,
+                        e.color,
+                        e.elite?25:14,
+                        4
+                    );
+
+                    enemies.splice(j,1);
+                }
+
+                break;
+            }
+        }
+    }
+}
+
+
+/* =========================
+   ENEMIES UPDATE
+========================= */
+
+function updateEnemies(dt){
+
+    for(
+        let i=enemies.length-1;
+        i>=0;
+        i--
+    ){
+
+        const e=enemies[i];
+
+        const angle=
+            Math.atan2(
+                player.y-e.y,
+                player.x-e.x
+            );
+
+        e.x+=
+            Math.cos(angle)*
+            e.speed;
+
+        e.y+=
+            Math.sin(angle)*
+            e.speed;
+
+        const dist=
+            Math.hypot(
+                player.x-e.x,
+                player.y-e.y
+            );
+
+        if(
+            dist<
+            player.radius+e.radius
+        ){
+
+            let damage=
+                e.damage*dt/1000;
+
+            if(player.shield>0){
+
+                player.shield-=damage;
+
+                if(player.shield<0){
+
+                    player.hp+=
+                        player.shield;
+
+                    player.shield=0;
+                }
+
+            }else{
+
+                player.hp-=damage;
+            }
+
+            const push=.7;
+
+            e.x-=
+                Math.cos(angle)*
+                push;
+
+            e.y-=
+                Math.sin(angle)*
+                push;
+
+            if(player.hp<=0){
+
+                endGame();
+
+                return;
+            }
+        }
+    }
+}
+
+
+/* =========================
+   CORES
+========================= */
+
+function updateCores(){
+
+    for(
+        let i=cores.length-1;
+        i>=0;
+        i--
+    ){
+
+        const c=cores[i];
+
+        c.life--;
+
+        const dist=
+            Math.hypot(
+                player.x-c.x,
+                player.y-c.y
+            );
+
+        if(
+            dist<
+            player.magnetRange
+        ){
+
+            const angle=
+                Math.atan2(
+                    player.y-c.y,
+                    player.x-c.x
+                );
+
+            c.x+=
+                Math.cos(angle)*4;
+
+            c.y+=
+                Math.sin(angle)*4;
+        }
+
+        if(
+            dist<
+            player.radius+c.radius
+        ){
+
+            xp+=25;
+
+            cores.splice(i,1);
+
+            createParticles(
+                player.x,
+                player.y,
+                "#a855f7",
+                12,
+                3
+            );
+
+            if(xp>=xpNeeded){
+
+                xp-=xpNeeded;
+
+                xpNeeded=
+                    Math.floor(
+                        xpNeeded*1.3
+                    );
+
+                levelUp();
+            }
+
+            continue;
+        }
+
+        if(c.life<=0){
+
+            cores.splice(i,1);
+        }
+    }
+}
+
+
+/* =========================
+   WAVE SYSTEM
+========================= */
+
+function updateWave(dt){
+
+    spawnTimer+=dt;
+    waveTimer+=dt;
+
+    const interval=
+        Math.max(
+            250,
+            950-wave*35
+        );
+
+    if(
+        spawnTimer>=interval
+    ){
+
+        spawnTimer=0;
+
+        const amount=
+            Math.random()<.12
+            ?2
+            :1;
+
+        for(
+            let i=0;
+            i<amount;
+            i++
+        ){
+            spawnEnemy();
+        }
+    }
+
+    if(
+        waveTimer>=30000
+    ){
+
+        waveTimer=0;
+
+        wave++;
+
+        if(wave>=FINAL_WAVE){
+
+            winGame();
+
+            return;
+        }
+
+        showToast(
+            "WAVE "+wave
+        );
+
+        createParticles(
+            player.x,
+            player.y,
+            "#00eaff",
+            40,
+            6
+        );
+    }
+}
+
+
+/* =========================
+   LEVEL UP
+========================= */
+
+function levelUp(){
+
+    paused=true;
+
+    showRandomUpgrades();
+}
+
+
+/* =========================
+   UPGRADE APPLY
+========================= */
+
+document
+.querySelectorAll(".card")
+.forEach(card=>{
+
+    card.addEventListener(
+        "click",
+        ()=>{
+
+            const type=
+                card.dataset.upgrade;
+
+            if(type==="fire"){
+
+                player.fireRate=
+                    Math.max(
+                        65,
+                        player.fireRate-25
+                    );
+
+                showToast(
+                    "RAPID FIRE +"
+                );
+            }
+
+            if(type==="power"){
+
+                player.damage+=12;
+
+                showToast(
+                    "POWER SHOT +"
+                );
+            }
+
+            if(type==="repair"){
+
+                player.maxHp+=5;
+
+                player.hp=
+                    Math.min(
+                        player.maxHp,
+                        player.hp+30
+                    );
+
+                showToast(
+                    "NANO REPAIR +"
+                );
+            }
+
+            if(type==="speed"){
+
+                player.speed+=.35;
+
+                showToast(
+                    "OVERDRIVE +"
+                );
+            }
+
+            if(type==="magnet"){
+
+                player.magnetRange+=55;
+
+                showToast(
+                    "CORE MAGNET +"
+                );
+            }
+
+            if(type==="critical"){
+
+                player.criticalChance=
+                    Math.min(
+                        .65,
+                        player.criticalChance+.08
+                    );
+
+                showToast(
+                    "CRITICAL CORE +"
+                );
+            }
+
+            if(type==="shield"){
+
+                player.shield+=40;
+
+                showToast(
+                    "ENERGY SHIELD +"
+                );
+            }
+
+            if(type==="multi"){
+
+                player.multishot=
+                    Math.min(
+                        5,
+                        player.multishot+1
+                    );
+
+                showToast(
+                    "MULTI SHOT +"
+                );
+            }
+
+            upgradeScreen
+                .classList
+                .add("hidden");
+
+            paused=false;
+
+            updateUI();
+        }
+    );
+});
+
+
+/* =========================
+   PARTICLES
+========================= */
+
+function createParticles(
+    x,
+    y,
+    color,
+    amount,
+    speed
+){
+
+    for(
+        let i=0;
+        i<amount;
+        i++
+    ){
+
+        const angle=
+            Math.random()*
+            Math.PI*2;
+
+        const velocity=
+            Math.random()*speed;
+
+        particles.push({
+
+            x,
+            y,
+
+            vx:
+                Math.cos(angle)*
+                velocity,
+
+            vy:
+                Math.sin(angle)*
+                velocity,
+
+            life:
+                30+
+                Math.random()*35,
+
+            maxLife:65,
+
+            size:
+                1+
+                Math.random()*3,
+
+            color
+        });
+    }
+}
+
+
+function updateParticles(){
+
+    for(
+        let i=particles.length-1;
+        i>=0;
+        i--
+    ){
+
+        const p=particles[i];
+
+        p.x+=p.vx;
+        p.y+=p.vy;
+
+        p.vx*=.96;
+        p.vy*=.96;
+
+        p.life--;
+
+        if(p.life<=0){
+
+            particles.splice(i,1);
+        }
+    }
+}
+
+
+/* =========================
+   DRAW BACKGROUND
+========================= */
+
 function drawBackground(){
 
-    ctx.fillStyle =
-        "#030711";
+    ctx.fillStyle="#03050b";
 
     ctx.fillRect(
         0,
         0,
-        canvas.width,
-        canvas.height
+        W,
+        H
     );
 
-    const grid = 50;
+    const grid=50;
 
-    ctx.strokeStyle =
-        "rgba(40,120,190,.12)";
+    ctx.strokeStyle=
+        "rgba(0,180,255,.055)";
 
-    ctx.lineWidth = 1;
+    ctx.lineWidth=1;
+
+    const offset=
+        (performance.now()/40)%grid;
 
     for(
-        let x=0;
-        x<canvas.width;
+        let x=-grid+offset;
+        x<W;
         x+=grid
     ){
 
         ctx.beginPath();
 
-        ctx.moveTo(
-            x,
-            0
-        );
+        ctx.moveTo(x,0);
 
-        ctx.lineTo(
-            x,
-            canvas.height
-        );
+        ctx.lineTo(x,H);
 
         ctx.stroke();
     }
 
     for(
-        let y=0;
-        y<canvas.height;
+        let y=-grid+offset;
+        y<H;
         y+=grid
     ){
 
         ctx.beginPath();
 
-        ctx.moveTo(
-            0,
-            y
-        );
+        ctx.moveTo(0,y);
 
-        ctx.lineTo(
-            canvas.width,
-            y
-        );
+        ctx.lineTo(W,y);
 
         ctx.stroke();
     }
+
+    const gradient=
+        ctx.createRadialGradient(
+            W/2,
+            H/2,
+            100,
+            W/2,
+            H/2,
+            Math.max(W,H)*.7
+        );
+
+    gradient.addColorStop(
+        0,
+        "rgba(0,180,255,.035)"
+    );
+
+    gradient.addColorStop(
+        1,
+        "rgba(0,0,0,.5)"
+    );
+
+    ctx.fillStyle=gradient;
+
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
 }
 
 
-function circle(
-    x,
-    y,
-    radius,
-    fill,
-    glow
-){
+/* =========================
+   DRAW PLAYER
+========================= */
+
+function drawPlayer(){
+
+    const angle=
+        Math.atan2(
+            mouse.y-player.y,
+            mouse.x-player.x
+        );
 
     ctx.save();
 
-    if(glow){
+    ctx.translate(
+        player.x,
+        player.y
+    );
 
-        ctx.shadowBlur = 18;
-        ctx.shadowColor = fill;
-    }
+    ctx.rotate(angle);
 
-    ctx.fillStyle = fill;
+    ctx.shadowBlur=25;
+    ctx.shadowColor="#00eaff";
+
+    ctx.fillStyle="#071b29";
+
+    ctx.beginPath();
+
+    ctx.moveTo(23,0);
+
+    ctx.lineTo(-14,-13);
+
+    ctx.lineTo(-8,0);
+
+    ctx.lineTo(-14,13);
+
+    ctx.closePath();
+
+    ctx.fill();
+
+    ctx.strokeStyle="#00eaff";
+
+    ctx.lineWidth=2;
+
+    ctx.stroke();
+
+    ctx.fillStyle="#00eaff";
 
     ctx.beginPath();
 
     ctx.arc(
-        x,
-        y,
-        radius,
+        4,
         0,
-        Math.PI * 2
+        5,
+        0,
+        Math.PI*2
     );
 
     ctx.fill();
 
     ctx.restore();
+
+    ctx.shadowBlur=0;
 }
 
 
-function drawPlayer(player){
+/* =========================
+   DRAW BULLETS
+========================= */
 
-    const p =
-        worldToScreen(
-            player.x,
-            player.y
-        );
+function drawBullets(){
 
-    const sx =
-        canvas.width /
-        state.arena.width;
+    for(const b of bullets){
 
-    const radius =
-        17 * sx;
+        ctx.shadowBlur=15;
 
-    let color =
-        player.slot === 1
-        ? "#2aa8ff"
-        : "#ff3d81";
+        ctx.shadowColor="#00eaff";
 
-    if(player.downed){
-        color = "#ffb020";
-    }
-
-    if(player.eliminated){
-        color = "#4b5666";
-    }
-
-    circle(
-        p.x,
-        p.y,
-        radius,
-        color,
-        true
-    );
-
-    ctx.fillStyle = "#ffffff";
-
-    ctx.beginPath();
-
-    ctx.arc(
-        p.x,
-        p.y,
-        radius * .35,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-    // HP
-    const barWidth =
-        42 * sx;
-
-    const barHeight =
-        5 * sx;
-
-    ctx.fillStyle =
-        "rgba(0,0,0,.6)";
-
-    ctx.fillRect(
-        p.x - barWidth / 2,
-        p.y - radius - 14,
-        barWidth,
-        barHeight
-    );
-
-    ctx.fillStyle =
-        "#28e18d";
-
-    ctx.fillRect(
-        p.x - barWidth / 2,
-        p.y - radius - 14,
-        barWidth *
-        (
-            player.hp /
-            player.max_hp
-        ),
-        barHeight
-    );
-
-    if(player.downed){
-
-        ctx.fillStyle =
-            "#ffb020";
-
-        ctx.font =
-            "bold 13px Arial";
-
-        ctx.textAlign =
-            "center";
-
-        ctx.fillText(
-            "DOWNED",
-            p.x,
-            p.y - radius - 22
-        );
-    }
-}
-
-
-function drawEnemy(enemy){
-
-    const p =
-        worldToScreen(
-            enemy.x,
-            enemy.y
-        );
-
-    const sx =
-        canvas.width /
-        state.arena.width;
-
-    let radius =
-        enemy.radius *
-        sx;
-
-    let color =
-        enemy.kind === "boss"
-        ? "#ff164c"
-        : enemy.kind === "elite"
-        ? "#ff9f1c"
-        : "#a83cff";
-
-    circle(
-        p.x,
-        p.y,
-        radius,
-        color,
-        true
-    );
-
-    if(enemy.kind === "boss"){
-
-        ctx.strokeStyle =
-            "#ff6c8c";
-
-        ctx.lineWidth = 3;
+        ctx.fillStyle="#8df7ff";
 
         ctx.beginPath();
 
         ctx.arc(
-            p.x,
-            p.y,
-            radius + 8,
+            b.x,
+            b.y,
+            b.radius,
             0,
-            Math.PI * 2
+            Math.PI*2
         );
+
+        ctx.fill();
+    }
+
+    ctx.shadowBlur=0;
+}
+
+
+/* =========================
+   DRAW ENEMIES
+========================= */
+
+function drawEnemies(){
+
+    for(const e of enemies){
+
+        ctx.save();
+
+        ctx.translate(
+            e.x,
+            e.y
+        );
+
+        ctx.shadowBlur=
+            e.elite
+            ?25
+            :15;
+
+        ctx.shadowColor=e.color;
+
+        ctx.fillStyle=
+            e.elite
+            ?"#36091c"
+            :"#260b12";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            0,
+            0,
+            e.radius,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+        ctx.strokeStyle=e.color;
+
+        ctx.lineWidth=
+            e.elite
+            ?3
+            :2;
 
         ctx.stroke();
-    }
 
-    const width =
-        radius * 2;
+        ctx.fillStyle=e.color;
 
-    ctx.fillStyle =
-        "rgba(0,0,0,.7)";
+        ctx.beginPath();
 
-    ctx.fillRect(
-        p.x - width / 2,
-        p.y - radius - 10,
-        width,
-        4
-    );
-
-    ctx.fillStyle =
-        "#ff4d6d";
-
-    ctx.fillRect(
-        p.x - width / 2,
-        p.y - radius - 10,
-        width *
-        (
-            enemy.hp /
-            enemy.max_hp
-        ),
-        4
-    );
-}
-
-
-function drawBullet(bullet){
-
-    const p =
-        worldToScreen(
-            bullet.x,
-            bullet.y
+        ctx.arc(
+            0,
+            0,
+            e.radius*.3,
+            0,
+            Math.PI*2
         );
 
-    circle(
-        p.x,
-        p.y,
-        4,
-        "#e8f8ff",
-        true
-    );
+        ctx.fill();
+
+        ctx.restore();
+
+        ctx.shadowBlur=0;
+
+        const barWidth=
+            e.radius*2;
+
+        ctx.fillStyle=
+            "rgba(0,0,0,.5)";
+
+        ctx.fillRect(
+            e.x-barWidth/2,
+            e.y-e.radius-10,
+            barWidth,
+            4
+        );
+
+        ctx.fillStyle=e.color;
+
+        ctx.fillRect(
+            e.x-barWidth/2,
+            e.y-e.radius-10,
+            barWidth*
+            (e.hp/e.maxHp),
+            4
+        );
+    }
 }
 
 
-function updateHUD(){
+/* =========================
+   DRAW CORES
+========================= */
 
-    if(!state){
+function drawCores(){
+
+    for(const c of cores){
+
+        const pulse=
+            1+
+            Math.sin(
+                performance.now()/100
+            )*.15;
+
+        ctx.save();
+
+        ctx.translate(
+            c.x,
+            c.y
+        );
+
+        ctx.scale(
+            pulse,
+            pulse
+        );
+
+        ctx.shadowBlur=20;
+
+        ctx.shadowColor="#a855f7";
+
+        ctx.fillStyle="#c084fc";
+
+        ctx.rotate(
+            performance.now()/500
+        );
+
+        ctx.beginPath();
+
+        ctx.moveTo(0,-8);
+
+        ctx.lineTo(8,0);
+
+        ctx.lineTo(0,8);
+
+        ctx.lineTo(-8,0);
+
+        ctx.closePath();
+
+        ctx.fill();
+
+        ctx.restore();
+    }
+
+    ctx.shadowBlur=0;
+}
+
+
+/* =========================
+   DRAW PARTICLES
+========================= */
+
+function drawParticles(){
+
+    for(const p of particles){
+
+        ctx.globalAlpha=
+            Math.max(
+                0,
+                p.life/p.maxLife
+            );
+
+        ctx.fillStyle=p.color;
+
+        ctx.fillRect(
+            p.x,
+            p.y,
+            p.size,
+            p.size
+        );
+    }
+
+    ctx.globalAlpha=1;
+}
+
+
+/* =========================
+   UI
+========================= */
+
+function updateUI(){
+
+    hpText.textContent=
+        Math.max(
+            0,
+            Math.floor(player.hp)
+        );
+
+    hpBar.style.width=
+        Math.max(
+            0,
+            player.hp/
+            player.maxHp*
+            100
+        )+"%";
+
+    xpBar.style.width=
+        Math.min(
+            100,
+            xp/
+            xpNeeded*
+            100
+        )+"%";
+
+    scoreText.textContent=
+        Math.floor(score);
+
+    waveText.textContent=wave;
+
+    bestText.textContent=bestScore;
+}
+
+
+/* =========================
+   GAME OVER
+========================= */
+
+function endGame(){
+
+    if(gameOver || victory){
         return;
     }
 
-    const p1 =
-        state.players.find(
-            p => p.slot === 1
+    gameOver=true;
+    running=false;
+
+    if(score>bestScore){
+
+        bestScore=
+            Math.floor(score);
+
+        localStorage.setItem(
+            "neonCoreBest",
+            bestScore
         );
-
-    const p2 =
-        state.players.find(
-            p => p.slot === 2
-        );
-
-    function playerHTML(p){
-
-        if(!p){
-
-            return `
-                <b>PLAYER 2</b>
-                <div style="color:#607995">
-                    Waiting...
-                </div>
-            `;
-        }
-
-        return `
-            <b>
-                ${escapeHTML(p.name)}
-            </b>
-            <div>
-                SCORE: ${p.score}
-                &nbsp; KILLS: ${p.kills}
-            </div>
-
-            <div class="bar">
-                <div
-                    class="hp"
-                    style="
-                    width:${
-                        Math.max(
-                            0,
-                            p.hp /
-                            p.max_hp *
-                            100
-                        )
-                    }%;
-                    "
-                ></div>
-            </div>
-
-            <div class="bar">
-                <div
-                    class="xp"
-                    style="
-                    width:${
-                        Math.min(
-                            100,
-                            p.xp /
-                            (p.level * 250) *
-                            100
-                        )
-                    }%;
-                    "
-                ></div>
-            </div>
-
-            LEVEL ${p.level}
-        `;
     }
 
-    document
-        .getElementById("p1")
-        .innerHTML =
-        playerHTML(p1);
+    document.getElementById(
+        "finalScore"
+    ).textContent=
+        Math.floor(score);
 
-    document
-        .getElementById("p2")
-        .innerHTML =
-        playerHTML(p2);
+    document.getElementById(
+        "finalWave"
+    ).textContent=wave;
 
-    document
-        .getElementById("waveInfo")
-        .textContent =
-        "WAVE " +
-        state.wave;
+    document.getElementById(
+        "finalBest"
+    ).textContent=bestScore;
+
+    gameOverScreen
+        .classList
+        .remove("hidden");
+
+    createParticles(
+        player.x,
+        player.y,
+        "#ff164f",
+        80,
+        8
+    );
+
+    updateUI();
 }
 
 
-function escapeHTML(text){
+/* =========================
+   VICTORY
+========================= */
 
-    return String(text)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-}
+function winGame(){
 
-
-function updateUpgrade(){
-
-    if(!state){
+    if(gameOver || victory){
         return;
     }
 
-    const me =
-        state.players.find(
-            p => p.slot === mySlot
+    victory=true;
+    running=false;
+    paused=false;
+
+    score+=5000;
+
+    if(score>bestScore){
+
+        bestScore=
+            Math.floor(score);
+
+        localStorage.setItem(
+            "neonCoreBest",
+            bestScore
         );
+    }
+
+    document.getElementById(
+        "victoryScore"
+    ).textContent=
+        Math.floor(score);
+
+    document.getElementById(
+        "victoryBest"
+    ).textContent=
+        bestScore;
+
+    victoryScreen
+        .classList
+        .remove("hidden");
+
+    createParticles(
+        player.x,
+        player.y,
+        "#00eaff",
+        150,
+        10
+    );
+
+    updateUI();
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+let toastTimer;
+
+function showToast(text){
+
+    const toast=
+        document.getElementById(
+            "toast"
+        );
+
+    toast.textContent=text;
+
+    toast.style.opacity=1;
+
+    clearTimeout(toastTimer);
+
+    toastTimer=
+        setTimeout(
+            ()=>{
+                toast.style.opacity=0;
+            },
+            1200
+        );
+}
+
+
+/* =========================
+   MAIN LOOP
+========================= */
+
+let lastTime=
+    performance.now();
+
+function loop(now){
+
+    const dt=
+        Math.min(
+            40,
+            now-lastTime
+        );
+
+    lastTime=now;
+
+    drawBackground();
 
     if(
-        !me ||
-        !me.pending_upgrade
+        running &&
+        !paused
     ){
 
-        upgrade.style.display =
+        updatePlayer();
+
+        updateBullets();
+
+        updateEnemies(dt);
+
+        updateCores();
+
+        updateParticles();
+
+        updateWave(dt);
+
+        updateUI();
+
+    }else{
+
+        updateParticles();
+    }
+
+    drawCores();
+
+    drawBullets();
+
+    drawEnemies();
+
+    drawPlayer();
+
+    drawParticles();
+
+    requestAnimationFrame(loop);
+}
+
+requestAnimationFrame(loop);
+
+
+/* ============================================================
+   RANK UP ONLINE MODE — ORIGINAL NEON CORE CLIENT
+   Preserves the original visual/game renderer and replaces only
+   local simulation with the authoritative RANK UP WebSocket state.
+============================================================ */
+
+const ONLINE_ARENA_WIDTH = 1100;
+const ONLINE_ARENA_HEIGHT = 700;
+
+const onlineParams = new URLSearchParams(window.location.search);
+const launchTicket = onlineParams.get("ticket");
+
+let onlineSocket = null;
+let onlineConnected = false;
+let onlineAuthenticated = false;
+let onlineRoomCode = "";
+let onlineMySlot = null;
+let onlineState = null;
+let onlineRemotePlayers = [];
+let onlineLastEnemyIds = new Set();
+let onlineCosmeticCores = [];
+let onlineRemoteAngle = 0;
+let onlineStatusMessage = "CONNECTING TO RANK UP...";
+let onlineRoomStarted = false;
+let onlineLastStatus = "";
+
+const onlineConnectionEl =
+    document.getElementById("onlineConnection");
+
+const createRoomButton =
+    document.getElementById("createRoomButton");
+
+const joinRoomButton =
+    document.getElementById("joinRoomButton");
+
+const roomCodeInput =
+    document.getElementById("roomCodeInput");
+
+const roomCodeDisplay =
+    document.getElementById("roomCodeDisplay");
+
+const originalStartButton =
+    document.getElementById("startButton");
+
+const onlineEnterButton =
+    document.getElementById("startButtonOnline");
+
+const remotePlayerLabel =
+    document.getElementById("remotePlayerLabel");
+
+function setOnlineStatus(text, error=false){
+    onlineStatusMessage = text || "";
+    if(onlineConnectionEl){
+        onlineConnectionEl.textContent = onlineStatusMessage;
+        onlineConnectionEl.classList.toggle("error", !!error);
+    }
+}
+
+function wsUrlForTicket(ticket){
+    const scheme =
+        location.protocol === "https:"
+        ? "wss:"
+        : "ws:";
+
+    return (
+        scheme +
+        "//" +
+        location.host +
+        "/ws/neon/" +
+        encodeURIComponent(ticket)
+    );
+}
+
+function onlineScaleX(x){
+    return (
+        Number(x || 0) *
+        (W / ONLINE_ARENA_WIDTH)
+    );
+}
+
+function onlineScaleY(y){
+    return (
+        Number(y || 0) *
+        (H / ONLINE_ARENA_HEIGHT)
+    );
+}
+
+function normalizeServerEnemy(enemy){
+    const kind = String(
+        enemy.kind || "normal"
+    ).toLowerCase();
+
+    const elite =
+        kind === "elite" ||
+        kind === "boss";
+
+    let color = "#ff3b30";
+
+    if(kind === "elite"){
+        color = "#ff2d78";
+    }
+
+    if(kind === "boss"){
+        color = "#ff00d4";
+    }
+
+    return {
+        id: enemy.id,
+        x: onlineScaleX(enemy.x),
+        y: onlineScaleY(enemy.y),
+        radius:
+            Math.max(
+                8,
+                Number(enemy.radius || 15) *
+                Math.min(
+                    W / ONLINE_ARENA_WIDTH,
+                    H / ONLINE_ARENA_HEIGHT
+                )
+            ),
+        hp: Number(enemy.hp || 0),
+        maxHp: Number(enemy.max_hp || 1),
+        elite,
+        kind,
+        color
+    };
+}
+
+function normalizeServerBullet(bullet){
+    return {
+        x: onlineScaleX(bullet.x),
+        y: onlineScaleY(bullet.y),
+        radius: 5,
+        life: 2,
+        vx: 0,
+        vy: 0,
+        damage: 0
+    };
+}
+
+function snapshotEnemyIds(){
+    const set = new Set();
+    for(const enemy of (enemies || [])){
+        set.add(String(enemy.id));
+    }
+    return set;
+}
+
+function spawnCosmeticDeathCore(x,y,color){
+    onlineCosmeticCores.push({
+        x:x,
+        y:y,
+        radius:7,
+        life:60,
+        color:color || "#a855f7"
+    });
+}
+
+function applyOnlineState(state){
+    onlineState = state;
+
+    const serverPlayers =
+        Array.isArray(state.players)
+        ? state.players
+        : [];
+
+    const me =
+        serverPlayers.find(
+            p => Number(p.slot) === Number(onlineMySlot)
+        ) ||
+        serverPlayers[0] ||
+        null;
+
+    onlineRemotePlayers =
+        serverPlayers.filter(
+            p => Number(p.slot) !== Number(onlineMySlot)
+        );
+
+    if(me){
+        player.x = onlineScaleX(me.x);
+        player.y = onlineScaleY(me.y);
+
+        const sx =
+            W / ONLINE_ARENA_WIDTH;
+
+        const sy =
+            H / ONLINE_ARENA_HEIGHT;
+
+        player.radius =
+            17 * Math.min(sx,sy);
+
+        player.hp =
+            Number(me.hp || 0);
+
+        player.maxHp =
+            Number(me.max_hp || 100);
+
+        score =
+            Number(me.score || 0);
+
+        xp =
+            Number(me.xp || 0);
+
+        wave =
+            Number(state.wave || 1);
+
+        if(me.level != null){
+            window.onlinePlayerLevel =
+                Number(me.level);
+        }
+
+        if(
+            me.downed ||
+            me.eliminated
+        ){
+            player.hp =
+                Math.max(
+                    0,
+                    Number(me.hp || 0)
+                );
+        }
+
+        if(
+            me.pending_upgrade
+        ){
+            showOnlineUpgrade(
+                me.pending_upgrade
+            );
+        }else{
+            upgradeScreen.classList.add(
+                "hidden"
+            );
+            paused = false;
+        }
+    }
+
+    const oldIds = onlineLastEnemyIds;
+
+    const nextEnemies =
+        Array.isArray(state.enemies)
+        ? state.enemies.map(
+            normalizeServerEnemy
+        )
+        : [];
+
+    const nextIds = new Set(
+        nextEnemies.map(
+            e => String(e.id)
+        )
+    );
+
+    for(const oldEnemy of (enemies || [])){
+        const id = String(oldEnemy.id);
+
+        if(!nextIds.has(id)){
+            spawnCosmeticDeathCore(
+                oldEnemy.x,
+                oldEnemy.y,
+                oldEnemy.color
+            );
+
+            createParticles(
+                oldEnemy.x,
+                oldEnemy.y,
+                oldEnemy.color,
+                oldEnemy.kind === "boss" ? 40 : 14,
+                oldEnemy.kind === "boss" ? 6 : 4
+            );
+        }
+    }
+
+    enemies = nextEnemies;
+
+    bullets =
+        Array.isArray(state.bullets)
+        ? state.bullets.map(
+            normalizeServerBullet
+        )
+        : [];
+
+    onlineLastEnemyIds = nextIds;
+
+    wave = Number(
+        state.wave || 1
+    );
+
+    onlineRoomStarted =
+        state.status === "playing";
+
+    if(
+        state.wave_message &&
+        state.wave_message !== onlineLastStatus
+    ){
+        showToast(
+            state.wave_message
+        );
+        onlineLastStatus =
+            state.wave_message;
+    }
+
+    if(state.status === "won"){
+        onlineShowVictory();
+    }
+
+    if(state.status === "lost"){
+        onlineShowGameOver();
+    }
+
+    updateUI();
+}
+
+function openOnlineArena(){
+    startScreen.classList.add(
+        "hidden"
+    );
+    gameOverScreen.classList.add(
+        "hidden"
+    );
+    victoryScreen.classList.add(
+        "hidden"
+    );
+
+    running = true;
+    paused = false;
+    gameOver = false;
+    victory = false;
+}
+
+function handleOnlineAuth(message){
+    onlineAuthenticated = true;
+    setOnlineStatus(
+        "CONNECTED AS " +
+        String(message.name || "RANK UP").toUpperCase()
+    );
+
+    createRoomButton.disabled = false;
+    joinRoomButton.disabled = false;
+    roomCodeInput.disabled = false;
+}
+
+function handleOnlineMessage(message){
+    if(!message){
+        return;
+    }
+
+    if(message.type === "authenticated"){
+        handleOnlineAuth(message);
+        return;
+    }
+
+    if(message.type === "room_created"){
+        onlineRoomCode =
+            String(
+                message.room_code || ""
+            ).toUpperCase();
+
+        roomCodeDisplay.innerHTML =
+            "ROOM CODE: <strong>" +
+            onlineRoomCode +
+            "</strong>";
+
+        setOnlineStatus(
+            "WAITING FOR PLAYER 2..."
+        );
+
+        onlineEnterButton.style.display =
             "none";
 
         return;
     }
 
-    upgrade.style.display =
-        "flex";
+    if(message.type === "joined"){
+        onlineRoomCode =
+            String(
+                message.room_code || onlineRoomCode
+            ).toUpperCase();
 
-    optionsBox.innerHTML = "";
+        onlineMySlot =
+            Number(message.slot || 1);
 
-    me.pending_upgrade.forEach(
-        option => {
+        roomCodeDisplay.innerHTML =
+            "ROOM CODE: <strong>" +
+            onlineRoomCode +
+            "</strong> • PLAYER " +
+            onlineMySlot;
 
-            const div =
-                document.createElement(
-                    "div"
-                );
+        setOnlineStatus(
+            "JOINED ROOM " +
+            onlineRoomCode
+        );
 
-            div.className =
-                "option";
-
-            div.innerHTML = `
-                <h3>
-                    ${option.title}
-                </h3>
-
-                <p>
-                    ${option.description}
-                </p>
-            `;
-
-            div.onclick = function(){
-
-                ws.send(
-                    JSON.stringify({
-                        type:"upgrade",
-                        choice:option.id
-                    })
-                );
-
-                upgrade.style.display =
-                    "none";
-            };
-
-            optionsBox.appendChild(
-                div
-            );
-        }
-    );
-}
-
-
-function showResult(){
-
-    if(!state){
         return;
     }
 
-    result.style.display =
-        "flex";
+    if(message.type === "state"){
+        if(
+            onlineMySlot == null &&
+            Array.isArray(message.players) &&
+            message.players.length
+        ){
+            onlineMySlot =
+                Number(
+                    message.players[0].slot
+                );
+        }
 
-    const won =
-        state.status === "won";
+        if(message.status === "waiting"){
+            setOnlineStatus(
+                "WAITING FOR PLAYER 2..."
+            );
+        }else if(
+            message.status === "playing"
+        ){
+            setOnlineStatus(
+                "ONLINE • TWO PLAYER CO-OP"
+            );
 
-    document
-        .getElementById("resultTitle")
-        .textContent =
-        won
-        ? "VICTORY"
-        : "GAME OVER";
+            if(!onlineRoomStarted){
+                openOnlineArena();
+            }
+        }
 
-    const totalScore =
-        state.players.reduce(
-            (sum,p) =>
-                sum + p.score,
+        applyOnlineState(message);
+        return;
+    }
+
+    if(message.type === "error"){
+        setOnlineStatus(
+            String(
+                message.message ||
+                "ONLINE ERROR"
+            ),
+            true
+        );
+
+        if(
+            message.message === "Room is full."
+        ){
+            joinRoomButton.disabled = false;
+        }
+
+        return;
+    }
+
+    if(message.type === "pong"){
+        return;
+    }
+}
+
+function connectOnline(){
+    if(!launchTicket){
+        setOnlineStatus(
+            "MISSING RANK UP LAUNCH TICKET",
+            true
+        );
+
+        createRoomButton.disabled = true;
+        joinRoomButton.disabled = true;
+        roomCodeInput.disabled = true;
+
+        return;
+    }
+
+    setOnlineStatus(
+        "CONNECTING TO RANK UP..."
+    );
+
+    try{
+        onlineSocket =
+            new WebSocket(
+                wsUrlForTicket(
+                    launchTicket
+                )
+            );
+    }catch(error){
+        setOnlineStatus(
+            "WEBSOCKET START FAILED",
+            true
+        );
+        return;
+    }
+
+    onlineSocket.onopen = ()=>{
+        onlineConnected = true;
+
+        setOnlineStatus(
+            "CONNECTED • AUTHENTICATING..."
+        );
+    };
+
+    onlineSocket.onmessage = event=>{
+        try{
+            const message =
+                JSON.parse(
+                    event.data
+                );
+
+            handleOnlineMessage(
+                message
+            );
+        }catch(error){
+            setOnlineStatus(
+                "INVALID SERVER DATA",
+                true
+            );
+        }
+    };
+
+    onlineSocket.onerror = ()=>{
+        setOnlineStatus(
+            "ONLINE CONNECTION ERROR",
+            true
+        );
+    };
+
+    onlineSocket.onclose = ()=>{
+        onlineConnected = false;
+
+        if(
+            !gameOver &&
+            !victory
+        ){
+            setOnlineStatus(
+                "SERVER CONNECTION CLOSED",
+                true
+            );
+        }
+    };
+}
+
+function sendOnlineMessage(payload){
+    if(
+        !onlineSocket ||
+        onlineSocket.readyState !== WebSocket.OPEN
+    ){
+        return false;
+    }
+
+    try{
+        onlineSocket.send(
+            JSON.stringify(payload)
+        );
+
+        return true;
+    }catch(error){
+        return false;
+    }
+}
+
+createRoomButton.onclick = ()=>{
+    if(!onlineAuthenticated){
+        return;
+    }
+
+    setOnlineStatus(
+        "CREATING ROOM..."
+    );
+
+    createRoomButton.disabled = true;
+
+    sendOnlineMessage({
+        type:"create_room"
+    });
+};
+
+joinRoomButton.onclick = ()=>{
+    if(!onlineAuthenticated){
+        return;
+    }
+
+    const code =
+        roomCodeInput.value
+        .trim()
+        .toUpperCase();
+
+    if(code.length !== 6){
+        setOnlineStatus(
+            "ENTER A 6-CHARACTER ROOM CODE",
+            true
+        );
+        return;
+    }
+
+    setOnlineStatus(
+        "JOINING ROOM " + code + "..."
+    );
+
+    joinRoomButton.disabled = true;
+
+    sendOnlineMessage({
+        type:"join_room",
+        room_code:code
+    });
+};
+
+roomCodeInput.addEventListener(
+    "input",
+    ()=>{
+        roomCodeInput.value =
+            roomCodeInput.value
+            .replace(
+                /[^a-zA-Z0-9]/g,
+                ""
+            )
+            .toUpperCase()
+            .slice(0,6);
+    }
+);
+
+onlineEnterButton.onclick =
+    ()=>{
+        if(onlineRoomStarted){
+            openOnlineArena();
+        }
+    };
+
+originalStartButton.disabled = true;
+originalStartButton.style.display = "none";
+
+/* Keep the original restart/victory screens, but make them reconnect.
+   The server remains authoritative, so these buttons reload the client.
+*/
+restartButton.onclick = ()=>{
+    location.reload();
+};
+
+victoryButton.onclick = ()=>{
+    location.reload();
+};
+
+function showOnlineUpgrade(choice){
+    const normalized = [];
+
+    if(Array.isArray(choice)){
+        for(const value of choice){
+            normalized.push(
+                String(value)
+            );
+        }
+    }else if(
+        choice &&
+        typeof choice === "object"
+    ){
+        for(const key of Object.keys(choice)){
+            normalized.push(
+                String(key)
+            );
+        }
+    }else if(choice){
+        normalized.push(
+            String(choice)
+        );
+    }
+
+    const fallback = [
+        "damage",
+        "speed",
+        "fire"
+    ];
+
+    const options =
+        normalized.length
+        ? normalized
+        : fallback;
+
+    const unique =
+        [...new Set(options)];
+
+    const finalChoices =
+        unique.length >= 3
+        ? unique.slice(0,3)
+        : [...unique, ...fallback]
+            .filter(
+                (v,i,a)=>
+                    a.indexOf(v) === i
+            )
+            .slice(0,3);
+
+    const titleMap = {
+        damage:"POWER SHOT",
+        speed:"OVERDRIVE",
+        fire:"RAPID FIRE",
+        health:"NANO REPAIR"
+    };
+
+    const textMap = {
+        damage:"Increase weapon damage.",
+        speed:"Increase movement speed.",
+        fire:"Increase weapon fire rate.",
+        health:"Restore and increase HP."
+    };
+
+    document.querySelectorAll(
+        ".card"
+    ).forEach(
+        (card,index)=>{
+            if(index >= finalChoices.length){
+                return;
+            }
+
+            const id =
+                finalChoices[index];
+
+            card.dataset.upgrade =
+                id;
+
+            const icon =
+                card.querySelector(".icon");
+
+            const heading =
+                card.querySelector("h3");
+
+            const paragraph =
+                card.querySelector("p");
+
+            if(icon){
+                icon.textContent =
+                    id === "damage"
+                    ? "💥"
+                    : id === "speed"
+                    ? "🏃"
+                    : id === "fire"
+                    ? "⚡"
+                    : "❤️";
+            }
+
+            if(heading){
+                heading.textContent =
+                    titleMap[id] ||
+                    String(id).toUpperCase();
+            }
+
+            if(paragraph){
+                paragraph.textContent =
+                    textMap[id] ||
+                    "Choose this upgrade.";
+            }
+        }
+    );
+
+    upgradeScreen.classList.remove(
+        "hidden"
+    );
+
+    paused = true;
+}
+
+document.querySelectorAll(
+    ".card"
+).forEach(
+    card=>{
+        card.addEventListener(
+            "click",
+            ()=>{
+                if(!onlineRoomStarted){
+                    return;
+                }
+
+                const type =
+                    card.dataset.upgrade;
+
+                sendOnlineMessage({
+                    type:"upgrade",
+                    choice:type
+                });
+
+                upgradeScreen.classList.add(
+                    "hidden"
+                );
+
+                paused = false;
+            }
+        );
+    }
+);
+
+/* Override the original local update functions by making the
+   online loop render server state only. */
+function onlineUpdateVisualCores(){
+    for(
+        let i=onlineCosmeticCores.length-1;
+        i>=0;
+        i--
+    ){
+        const core =
+            onlineCosmeticCores[i];
+
+        core.life -= 1;
+
+        if(core.life <= 0){
+            onlineCosmeticCores.splice(
+                i,
+                1
+            );
+        }
+    }
+}
+
+function onlineDrawRemotePlayers(){
+    for(
+        const remote of onlineRemotePlayers
+    ){
+        const x =
+            onlineScaleX(remote.x);
+
+        const y =
+            onlineScaleY(remote.y);
+
+        const sx =
+            W / ONLINE_ARENA_WIDTH;
+
+        const sy =
+            H / ONLINE_ARENA_HEIGHT;
+
+        const radius =
+            17 * Math.min(
+                sx,
+                sy
+            );
+
+        ctx.save();
+
+        ctx.translate(
+            x,
+            y
+        );
+
+        ctx.rotate(
+            onlineRemoteAngle
+        );
+
+        ctx.shadowBlur = 25;
+        ctx.shadowColor =
+            remote.downed
+            ? "#ff164f"
+            : "#d05cff";
+
+        ctx.fillStyle =
+            remote.downed
+            ? "#350915"
+            : "#170b2b";
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            23 * Math.min(sx,sy),
             0
         );
 
-    document
-        .getElementById("resultScore")
-        .textContent =
-        "TEAM SCORE: " +
-        totalScore;
+        ctx.lineTo(
+            -14 * Math.min(sx,sy),
+            -13 * Math.min(sx,sy)
+        );
+
+        ctx.lineTo(
+            -8 * Math.min(sx,sy),
+            0
+        );
+
+        ctx.lineTo(
+            -14 * Math.min(sx,sy),
+            13 * Math.min(sx,sy)
+        );
+
+        ctx.closePath();
+
+        ctx.fill();
+
+        ctx.strokeStyle =
+            remote.downed
+            ? "#ff164f"
+            : "#d05cff";
+
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle =
+            remote.downed
+            ? "#ff164f"
+            : "#d05cff";
+
+        ctx.beginPath();
+
+        ctx.arc(
+            4 * Math.min(sx,sy),
+            0,
+            5 * Math.min(sx,sy),
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+        ctx.restore();
+
+        const label =
+            remote.downed
+            ? "DOWNED"
+            : String(
+                remote.name ||
+                "PLAYER 2"
+            );
+
+        ctx.save();
+
+        ctx.font =
+            "bold 11px Arial";
+
+        ctx.textAlign =
+            "center";
+
+        ctx.fillStyle =
+            remote.downed
+            ? "#ff6685"
+            : "#ff7cf3";
+
+        ctx.shadowBlur = 10;
+        ctx.shadowColor =
+            remote.downed
+            ? "#ff164f"
+            : "#d05cff";
+
+        ctx.fillText(
+            label,
+            x,
+            y - radius - 12
+        );
+
+        ctx.restore();
+    }
 }
 
+function onlineDrawCosmeticCores(){
+    for(
+        const c of onlineCosmeticCores
+    ){
+        const pulse =
+            1 +
+            Math.sin(
+                performance.now()/100
+            ) * .15;
 
-function draw(){
+        ctx.save();
 
-    requestAnimationFrame(
-        draw
-    );
+        ctx.translate(
+            c.x,
+            c.y
+        );
 
-    if(!state){
+        ctx.scale(
+            pulse,
+            pulse
+        );
 
-        drawBackground();
+        ctx.shadowBlur = 20;
+        ctx.shadowColor =
+            "#a855f7";
 
+        ctx.fillStyle =
+            "#c084fc";
+
+        ctx.rotate(
+            performance.now()/500
+        );
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,-8
+        );
+
+        ctx.lineTo(
+            8,0
+        );
+
+        ctx.lineTo(
+            0,8
+        );
+
+        ctx.lineTo(
+            -8,0
+        );
+
+        ctx.closePath();
+
+        ctx.fill();
+
+        ctx.restore();
+    }
+
+    ctx.shadowBlur = 0;
+}
+
+function onlineSendInput(){
+    if(!onlineRoomStarted){
         return;
     }
 
-    drawBackground();
-
-    for(
-        const bullet of state.bullets
-    ){
-        drawBullet(bullet);
-    }
-
-    for(
-        const enemy of state.enemies
-    ){
-        drawEnemy(enemy);
-    }
-
-    for(
-        const player of state.players
-    ){
-        drawPlayer(player);
-    }
-
-    updateHUD();
-
-    const message =
-        document.getElementById(
-            "centerMessage"
+    const angle =
+        Math.atan2(
+            mouse.y - player.y,
+            mouse.x - player.x
         );
 
-    message.textContent =
-        state.wave_message || "";
-
-    if(
-        state.status === "waiting"
-    ){
-
-        message.textContent =
-            "WAITING FOR PLAYER 2";
-    }
+    sendOnlineMessage({
+        type:"input",
+        data:{
+            up:
+                !!(
+                    keys["w"] ||
+                    keys["arrowup"]
+                ),
+            down:
+                !!(
+                    keys["s"] ||
+                    keys["arrowdown"]
+                ),
+            left:
+                !!(
+                    keys["a"] ||
+                    keys["arrowleft"]
+                ),
+            right:
+                !!(
+                    keys["d"] ||
+                    keys["arrowright"]
+                ),
+            shoot:
+                !!mouse.down,
+            revive:
+                !!keys["e"],
+            angle:angle
+        }
+    });
 }
 
+setInterval(
+    onlineSendInput,
+    50
+);
 
-connect();
-draw();
+function onlineShowVictory(){
+    if(victory){
+        return;
+    }
+
+    running = false;
+    paused = false;
+    victory = true;
+
+    gameOverScreen.classList.add(
+        "hidden"
+    );
+
+    victoryScreen.classList.remove(
+        "hidden"
+    );
+
+    const finalScore =
+        onlineState &&
+        Array.isArray(
+            onlineState.players
+        )
+        ? onlineState.players.reduce(
+            (sum,p)=>
+                sum +
+                Number(p.score || 0),
+            0
+        )
+        : score;
+
+    document.getElementById(
+        "victoryScore"
+    ).textContent =
+        Math.floor(
+            finalScore
+        );
+
+    document.getElementById(
+        "victoryBest"
+    ).textContent =
+        Math.max(
+            Number(
+                bestScore || 0
+            ),
+            Math.floor(
+                finalScore
+            )
+        );
+}
+
+function onlineShowGameOver(){
+    if(gameOver){
+        return;
+    }
+
+    running = false;
+    paused = false;
+    gameOver = true;
+
+    gameOverScreen.classList.remove(
+        "hidden"
+    );
+
+    const finalScore =
+        onlineState &&
+        Array.isArray(
+            onlineState.players
+        )
+        ? onlineState.players.reduce(
+            (sum,p)=>
+                sum +
+                Number(p.score || 0),
+            0
+        )
+        : score;
+
+    document.getElementById(
+        "finalScore"
+    ).textContent =
+        Math.floor(
+            finalScore
+        );
+
+    document.getElementById(
+        "finalWave"
+    ).textContent =
+        Number(
+            wave || 1
+        );
+
+    document.getElementById(
+        "finalBest"
+    ).textContent =
+        Math.max(
+            Number(
+                bestScore || 0
+            ),
+            Math.floor(
+                finalScore
+            )
+        );
+}
+
+/* Replace the original loop with an online, server-authoritative loop. */
+function onlineLoop(now){
+    const dt =
+        Math.min(
+            40,
+            now - lastTime
+        );
+
+    lastTime = now;
+
+    drawBackground();
+
+    if(onlineRoomStarted){
+        updateParticles();
+        onlineUpdateVisualCores();
+    }else{
+        updateParticles();
+    }
+
+    drawCores();
+    onlineDrawCosmeticCores();
+    drawBullets();
+    drawEnemies();
+    drawPlayer();
+    onlineDrawRemotePlayers();
+    drawParticles();
+
+    requestAnimationFrame(
+        onlineLoop
+    );
+}
+
+cancelAnimationFrame(
+    window.__neonOriginalFrame ||
+    0
+);
+
+requestAnimationFrame(
+    onlineLoop
+);
+
+/* Start online connection after the original file has finished
+   defining all renderer functions and DOM elements. */
+connectOnline();
 
 </script>
 
 </body>
-</html>
-"""
+</html>"""
 
 
 @app.get("/neon", response_class=HTMLResponse)
